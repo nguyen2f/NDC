@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Management</title>
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 28px;
+      font-weight: 600;
+      color: #004a8d;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px auto;
+      background: #002147;
+      color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table th, table td {
+      text-align: center;
+      padding: 12px;
+    }
+    table thead th {
+      background-color: #004a8d;
+      color: #fff;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    table tbody tr:nth-child(even) {
+      background-color: #003366;
+    }
+    table tbody tr:hover {
+      background-color: #00509e;
+    }
+    .no-users {
+      text-align: center;
+      color: #555;
+      font-size: 18px;
+      margin: 20px 0;
+    }
+    .action-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    .action-links a {
+      color: #66ccff;
+      text-decoration: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      background-color: #004a8d;
+    }
+    .action-links a:hover {
+      background-color: #66ccff;
+      color: #004a8d;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="logo">
+      <img th:src="@{/images/logo.png}" alt="Logo quản lý">
+    </div>
+    <div class="custom-menu">
+      <button type="button" id="sidebarCollapse" class="btn btn-primary">
+        <i class="fa fa-bars"></i>
+        <span class="sr-only">Toggle Menu</span>
+      </button>
+    </div>
+    <div class="p-4 pt-5">
+      <h1><a href="#" class="logo">Quản lý</a></h1>
+      <ul class="list-unstyled components mb-5">
+        <li><a th:href="@{/manager/homeManager}">Bảng điều khiển</a></li>
+        <li>
+          <a href="#deliverySubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý giao hàng</a>
+          <ul class="collapse list-unstyled" id="deliverySubmenu">
+            <li><a th:href="@{/manager/list-shippers}">Xem danh sách giao hàng</a></li>
+            <li><a th:href="@{/manager/create-shipper}">Thêm mới giao hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#orderSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý đơn hàng</a>
+          <ul class="collapse list-unstyled" id="orderSubmenu">
+            <li><a th:href="@{/manager/list-orders}">Danh sách đơn hàng</a></li>
+            <li><a th:href="@{/manager/update-user}">Cập nhật trạng thái đơn hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#employeeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý nhân viên</a>
+          <ul class="collapse list-unstyled" id="employeeSubmenu">
+            <li><a th:href="@{/manager/list-users}">Danh sách nhân viên</a></li>
+            <li><a th:href="@{/manager/create-employee}">Thêm mới nhân viên</a></li>
+          </ul>
+        </li>
+        <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+      </ul>
+      <div class="footer">
+        <p>
+          Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Developed by <a href="https://fb.com/tendou2508" target="_blank">Đức Cảnh</a>
+        </p>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div id="content" class="p-4 p-md-5 pt-5">
+    <h1>Users Management</h1>
+
+    <div th:if="${users != null and #lists.size(users) > 0}">
+      <h2>Users List</h2>
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>User ID</th>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+          <td th:text="${user.id}">ID</td>
+          <td th:text="${user.fullName}">Name</td>
+          <td th:text="${user.phoneNumber}">Phone</td>
+          <td class="action-links">
+            <a th:href="@{/manager/update-user/{id}(id=${user.id})}">Update</a>
+            <a th:href="@{/manager/delete-user/{id}(id=${user.id})}" onclick="return confirm('Are you sure?');">Delete</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${users == null or #lists.isEmpty(users)}" class="no-users">
+      <p>No users found.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/popper.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+  function logout() {
+    alert('Đăng xuất thành công!');
+    window.location.href = '/login';
+  }
+</script>
+</body>
+</html>

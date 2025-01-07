@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Quản lý Shipper</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: 600;
+      color: #333;
+    }
+    .header-content {
+      text-align: center;
+      margin: 40px auto;
+      max-width: 1000px;
+      background: #1a73e8; /* Lighter blue */
+      color: #ffffff;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    .header-content h2 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+    }
+    .header-content p {
+      font-size: 20px;
+      line-height: 1.8;
+    }
+    .chart-container {
+      text-align: center;
+      margin: 20px auto;
+    }
+    canvas {
+      max-width: 1000px; /* Chiều rộng tối đa cho biểu đồ */
+      height: 600px; /* Chiều cao của biểu đồ */
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="logo">
+      <img th:src="@{/images/logo.png}" alt="Logo quản lý">
+    </div>
+    <div class="custom-menu">
+      <button type="button" id="sidebarCollapse" class="btn btn-primary">
+        <i class="fa fa-bars"></i>
+        <span class="sr-only">Toggle Menu</span>
+      </button>
+    </div>
+    <div class="p-4 pt-5">
+      <h1><a href="#" class="logo">Quản lý</a></h1>
+      <ul class="list-unstyled components mb-5">
+        <li><a th:href="@{/manager/homeManager}">Bảng điều khiển</a></li>
+        <li>
+          <a href="#deliverySubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý giao hàng</a>
+          <ul class="collapse list-unstyled" id="deliverySubmenu">
+            <li><a th:href="@{/manager/list-shippers}">Danh sách giao hàng</a></li>
+            <li><a th:href="@{/manager/create-shipper}">Thêm mới giao hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#orderSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý đơn hàng</a>
+          <ul class="collapse list-unstyled" id="orderSubmenu">
+            <li><a th:href="@{/manager/list-orders}">Danh sách đơn hàng</a></li>
+            <li><a th:href="@{/manager/update-user}">Cập nhật trạng thái đơn hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#employeeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý nhân viên</a>
+          <ul class="collapse list-unstyled" id="employeeSubmenu">
+            <li><a th:href="@{/manager/list-users}">Danh sách nhân viên</a></li>
+            <li><a th:href="@{/manager/create-shipper}">Thêm mới nhân viên</a></li>
+          </ul>
+        </li>
+        <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+      </ul>
+      <div class="footer">
+        <p>
+          Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Developed by <a href="https://fb.com/tendou2508" target="_blank">Đức Cảnh</a>
+        </p>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div id="content" class="p-4 p-md-5 pt-5">
+    <div class="chart-container">
+      <h1>Thống Kê Trạng Thái Đơn Hàng</h1>
+      <canvas id="orderChart" width="600" height="300"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Biểu đồ trạng thái đơn hàng
+  fetch('/api/order-statistics')
+          .then(response => response.json())
+          .then(data => {
+            const formattedData = {
+              completed: data.COMPLETED || 0,
+              processing: data.PROCESSING || 0,
+              pending: data.PENDING || 0,
+              cancelled: data.CANCELLED || 0
+            };
+
+            const ctxOrder = document.getElementById('orderChart').getContext('2d');
+            new Chart(ctxOrder, {
+              type: 'bar',
+              data: {
+                labels: ['Completed', 'Processing', 'Pending', 'Cancelled'],
+                datasets: [{
+                  label: 'Số lượng đơn hàng',
+                  data: [
+                    formattedData.completed,
+                    formattedData.processing,
+                    formattedData.pending,
+                    formattedData.cancelled
+                  ],
+                  backgroundColor: [
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                    'rgba(255, 99, 132, 0.6)'
+                  ],
+                  borderColor: [
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(255, 99, 132, 1)'
+                  ],
+                  borderWidth: 1
+                }]
+              },
+              options: {
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: 'top',
+                  },
+                  title: {
+                    display: true,
+                    text: 'Thống Kê Trạng Thái Đơn Hàng'
+                  }
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true
+                  }
+                }
+              }
+            });
+          })
+          .catch(error => console.error('Lỗi khi tải dữ liệu:', error));
+
+  function logout() {
+    alert('Đăng xuất thành công!');
+    window.location.href = '/login';
+  }
+</script>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/popper.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

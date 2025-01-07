@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Quản lý Shipper</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: 600;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px auto;
+      background: #002147;
+      color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    table th, table td {
+      text-align: center;
+      padding: 12px;
+    }
+    table thead th {
+      background-color: #004a8d;
+      color: #fff;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    table tbody tr:nth-child(even) {
+      background-color: #003366;
+    }
+    table tbody tr:hover {
+      background-color: #00509e;
+    }
+    .no-shippers {
+      text-align: center;
+      color: #555;
+      font-size: 18px;
+      margin: 20px 0;
+    }
+    .action-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+    }
+    .action-links a {
+      display: inline-block;
+      padding: 5px 10px;
+      color: #fff;
+      background-color: #004a8d;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      text-align: center;
+    }
+    .action-links a:hover {
+      background-color: #66ccff;
+    }
+    .divider {
+      width: 2px;
+      height: 20px;
+      background-color: #fff;
+      margin: 0 5px;
+    }
+    .add-new {
+      text-align: center;
+      margin: 20px 0;
+    }
+    .add-new a {
+      background-color: #004a8d;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .add-new a:hover {
+      background-color: #003366;
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+  <!-- Sidebar -->
+  <nav id="sidebar">
+    <div class="logo">
+      <img th:src="@{/images/logo.png}" alt="Logo quản lý">
+    </div>
+    <div class="custom-menu">
+      <button type="button" id="sidebarCollapse" class="btn btn-primary">
+        <i class="fa fa-bars"></i>
+        <span class="sr-only">Toggle Menu</span>
+      </button>
+    </div>
+    <div class="p-4 pt-5">
+      <h1><a href="#" class="logo">Quản lý</a></h1>
+      <ul class="list-unstyled components mb-5">
+        <li><a th:href="@{/manager/homeManager}">Bảng điều khiển</a></li>
+        <li>
+          <a href="#deliverySubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý giao hàng</a>
+          <ul class="collapse list-unstyled" id="deliverySubmenu">
+            <li><a th:href="@{/manager/list-shippers}">Danh sách giao hàng</a></li>
+            <li><a th:href="@{/manager/create-shipper}">Thêm mới giao hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#orderSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý đơn hàng</a>
+          <ul class="collapse list-unstyled" id="orderSubmenu">
+            <li><a th:href="@{/manager/list-orders}">Danh sách đơn hàng</a></li>
+            <li><a th:href="@{/manager/update-user}">Cập nhật trạng thái đơn hàng</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#employeeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý nhân viên</a>
+          <ul class="collapse list-unstyled" id="employeeSubmenu">
+            <li><a th:href="@{/manager/list-users}">Danh sách nhân viên</a></li>
+            <li><a th:href="@{/manager/create-shipper}">Thêm mới nhân viên</a></li>
+          </ul>
+        </li>
+        <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+      </ul>
+      <div class="footer">
+        <p>
+          Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Developed by <a href="https://fb.com/tendou2508" target="_blank">Đức Cảnh</a>
+        </p>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div id="content" class="p-4 p-md-5 pt-5">
+    <h1>Quản lý Shipper</h1>
+
+    <div th:if="${shippers != null and #lists.size(shippers) > 0}">
+      <table class="table table-bordered">
+        <thead>
+        <tr>
+          <th>Shipper ID</th>
+          <th>Tên</th>
+          <th>Số điện thoại</th>
+          <th>Trạng thái</th>
+          <th>Hành động</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="shipper : ${shippers}">
+          <td th:text="${shipper.id}" style="text-align: center;">ID</td>
+          <td th:text="${shipper.fullName}" style="text-align: center;">Tên</td>
+          <td th:text="${shipper.phoneNumber}" style="text-align: center;">Số điện thoại</td>
+          <td th:text="${shipper.status}" style="text-align: center;">Trạng thái</td>
+          <td class="action-links" style="text-align: center;">
+            <a th:href="@{/manager/update-shipper/{id}(id=${shipper.id})}">Cập nhật</a>
+            <div class="divider"></div>
+            <a th:href="@{/manager/delete-shipper/{id}(id=${shipper.id})}" onclick="return confirm('Bạn có chắc chắn muốn xóa?');">Xóa</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div th:if="${shippers == null or #lists.isEmpty(shippers)}" class="no-shippers">
+      <p>Không tìm thấy shipper.</p>
+    </div>
+
+    <div class="add-new">
+      <a th:href="@{/manager/create-shipper}">Thêm mới Shipper</a>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/popper.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+  function logout() {
+    alert('Đăng xuất thành công!');
+    window.location.href = '/login';
+  }
+</script>
+</body>
+</html>

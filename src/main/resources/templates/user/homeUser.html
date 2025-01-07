@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Trang chủ</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            padding: 10px;
+            font-size: 16px;
+            width: calc(100% - 60px);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input-group button {
+            padding: 10px;
+            font-size: 16px;
+            background-color: #1a73e8;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .input-group button:hover {
+            background-color: #00509e;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .history-table th, .history-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ccc;
+        }
+        .history-table th {
+            background-color: #1a73e8;
+            color: #ffffff;
+        }
+        .history-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Logo">
+        </div>
+        <div class="custom-menu">
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                <i class="fa fa-bars"></i>
+                <span class="sr-only">Toggle Menu</span>
+            </button>
+        </div>
+        <div class="p-4 pt-5">
+            <h1><a href="#" class="logo">Menu</a></h1>
+            <ul class="list-unstyled components mb-5">
+                <li><a th:href="@{/user-home}">Trang chủ</a></li>
+                <li>
+                    <a href="#accountSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Tài khoản</a>
+                    <ul class="collapse list-unstyled" id="accountSubmenu">
+                        <li><a th:href="@{/user/update-profile}">Cập nhật thông tin</a></li>
+                        <li><a th:href="@{/user/change-password}">Đổi mật khẩu</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#orderSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý đơn hàng</a>
+                    <ul class="collapse list-unstyled" id="orderSubmenu">
+                        <li><a th:href="@{/user/create-order}">Tạo đơn hàng</a></li>
+                        <li><a th:href="@{/user/sent-orders}">Đơn hàng đã gửi</a></li>
+                        <li><a th:href="@{/user/order-statistics}">Thống kê đơn hàng</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#helpSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Hỗ trợ, trợ giúp</a>
+                    <ul class="collapse list-unstyled" id="helpSubmenu">
+                        <li><a th:href="@{/faq}">Câu hỏi thường gặp</a></li>
+                        <li><a th:href="@{/contact-support}">Liên hệ hỗ trợ</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+            </ul>
+            <div class="footer">
+                <p>
+                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart" aria-hidden="true"></i> by <a href="https://fb.com/tendou2508" target="_blank">Đức Cảnh</a>
+                </p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content" class="p-4 p-md-5 pt-5">
+        <h2 class="mb-4">NDC Delivery Management</h2>
+        <hr>
+        <p>Xin chào đến với trang web hệ thống quản lý giao hàng nhanh nhất Việt Nam. Dự án được thực hiện bởi 3 sinh viên đó là: Nguyễn Đức Cảnh, Hoàng Tiến Đạt, Nguyễn Phúc Nguyên.</p>
+        <h1>Lịch sử Đơn Hàng</h1>
+        <div class="input-group">
+            <input type="number" id="orderId" placeholder="Nhập ID đơn hàng" required>
+            <button onclick="fetchOrderHistory()">Xem Lịch Sử</button>
+        </div>
+
+        <table class="history-table" id="historyTable" style="display:none;">
+            <thead>
+            <tr>
+                <th>Thời gian</th>
+                <th>Trạng thái</th>
+                <th>Ghi chú</th>
+            </tr>
+            </thead>
+            <tbody id="historyBody"></tbody>
+        </table>
+    </div>
+</div>
+<script>
+    async function fetchOrderHistory() {
+        const orderId = document.getElementById('orderId').value;
+        const response = await fetch(`/api/${orderId}/history`);
+
+        if (response.ok) {
+            const history = await response.json();
+            displayHistory(history);
+        } else {
+            alert('Không tìm thấy lịch sử cho ID đơn hàng này.');
+        }
+    }
+
+    function displayHistory(history) {
+        const historyBody = document.getElementById('historyBody');
+        historyBody.innerHTML = ''; // Xóa nội dung cũ
+        history.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(item.timestamp).toLocaleString()}</td>
+                <td>${item.status}</td>
+                <td>${item.note || 'N/A'}</td>
+            `;
+            historyBody.appendChild(row);
+        });
+        document.getElementById('historyTable').style.display = 'table';
+    }
+</script>
+<!-- Scripts -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/popper.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+</body>
+</html>

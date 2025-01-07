@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>All Orders</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Logo">
+        </div>
+        <div class="custom-menu">
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                <i class="fa fa-bars"></i>
+                <span class="sr-only">Toggle Menu</span>
+            </button>
+        </div>
+        <div class="p-4 pt-5">
+            <h1><a href="#" class="logo">Menu</a></h1>
+            <ul class="list-unstyled components mb-5">
+                <li><a th:href="@{/admin/home}">Trang chủ</a></li>
+                <li>
+                    <a href="#orderSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý đơn hàng</a>
+                    <ul class="collapse list-unstyled" id="orderSubmenu">
+                        <li><a th:href="@{/orders/all}">Tất cả đơn hàng</a></li>
+                        <li><a th:href="@{/orders/pending}">Đơn hàng chờ xử lý</a></li>
+                        <li><a th:href="@{/orders/completed}">Đơn hàng đã hoàn thành</a></li>
+                    </ul>
+                </li>
+                <li><a th:href="@{/admin/manage-shippers}">Quản lý Shipper</a></li>
+                <li><a th:href="@{/admin/settings}">Cài đặt</a></li>
+                <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+            </ul>
+            <div class="footer">
+                <p>
+                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Template by <a href="https://fb.com/tendou2508" target="_blank">Đức Cảnh</a>
+                </p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content" class="p-4 p-md-5 pt-5">
+        <h2 class="mb-4">All Orders</h2>
+        <hr>
+        <div class="orders-container">
+            <h1>All Orders</h1>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Order Name</th>
+                    <th>Sender</th>
+                    <th>Receiver</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.orderName}"></td>
+                    <td th:text="${order.senderName}"></td>
+                    <td th:text="${order.receiverName}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td>
+                        <form action="/orders/assign-pickupshipper" method="post" class="mb-2">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <div class="form-group">
+                                <label for="shipperIdPickup${order.id}">Shipper ID:</label>
+                                <input type="text" id="shipperIdPickup${order.id}" name="shipperId" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Assign Pickup</button>
+                        </form>
+                        <form action="/orders/assign-delivershipper" method="post">
+                            <input type="hidden" name="orderId" th:value="${order.id}">
+                            <div class="form-group">
+                                <label for="shipperIdDeliver${order.id}">Shipper ID:</label>
+                                <input type="text" id="shipperIdDeliver${order.id}" name="shipperId" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-success">Assign Deliver</button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/popper.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    function logout() {
+        alert('Đăng xuất thành công!');
+        window.location.href = '/login';
+    }
+</script>
+</body>
+</html>

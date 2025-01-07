@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Thêm mới Shipper</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 28px;
+            font-weight: 600;
+            color: #004a8d;
+        }
+        form {
+            background: #002147;
+            color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        form div {
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        form label {
+            font-weight: 500;
+            color: #ddd;
+        }
+        form input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        form button {
+            background-color: #004a8d;
+            border: none;
+            padding: 10px 20px;
+            color: white;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        form button:hover {
+            background-color: #003366;
+        }
+        .cancel-link {
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .cancel-link:hover {
+            background-color: #5a6268;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper d-flex align-items-stretch">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="logo">
+            <img th:src="@{/images/logo.png}" alt="Logo quản lý">
+        </div>
+        <div class="custom-menu">
+            <button type="button" id="sidebarCollapse" class="btn btn-primary">
+                <i class="fa fa-bars"></i>
+                <span class="sr-only">Toggle Menu</span>
+            </button>
+        </div>
+        <div class="p-4 pt-5">
+            <h1><a href="#" class="logo">Quản lý</a></h1>
+            <ul class="list-unstyled components mb-5">
+                <li><a th:href="@{/manager/homeManager}">Bảng điều khiển</a></li>
+                <li>
+                    <a href="#deliverySubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý giao hàng</a>
+                    <ul class="collapse list-unstyled" id="deliverySubmenu">
+                        <li><a th:href="@{/manager/list-shippers}">Xem danh sách giao hàng</a></li>
+                        <li><a th:href="@{/manager/create-shipper}">Thêm mới giao hàng</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#orderSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý đơn hàng</a>
+                    <ul class="collapse list-unstyled" id="orderSubmenu">
+                        <li><a th:href="@{/manager/list-orders}">Danh sách đơn hàng</a></li>
+                        <li><a th:href="@{/manager/update-user}">Cập nhật trạng thái đơn hàng</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#employeeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Quản lý nhân viên</a>
+                    <ul class="collapse list-unstyled" id="employeeSubmenu">
+                        <li><a th:href="@{/manager/list-users}">Danh sách nhân viên</a></li>
+                        <li><a th:href="@{/manager/create-employee}">Thêm mới nhân viên</a></li>
+                    </ul>
+                </li>
+                <li><a href="#" onclick="logout()">Đăng xuất</a></li>
+            </ul>
+            <div class="footer">
+                <p>
+                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | Developed by <a href="https://fb.com/tendou2508" target="_blank">Đức Cảnh</a>
+                </p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="content" class="p-4 p-md-5 pt-5">
+        <h1>Thêm mới Shipper</h1>
+        <form th:action="@{/manager/create-shipper}" method="post">
+            <div>
+                <label for="fullName">Tên:</label>
+                <input type="text" id="fullName" name="fullName" th:value="${shipper.fullName}" required>
+            </div>
+            <div>
+                <label for="phoneNumber">Số điện thoại:</label>
+                <input type="text" id="phoneNumber" name="phoneNumber" th:value="${shipper.phoneNumber}" required>
+            </div>
+            <div>
+                <label for="status">Trạng thái:</label>
+                <input type="text" id="status" name="status" th:value="${shipper.status}" required>
+            </div>
+            <div>
+                <label for="password">Mật khẩu:</label>
+                <input type="text" id="password" name="password" th:value="${shipper.password}" required>
+            </div>
+            <div>
+                <button type="submit">Lưu</button>
+                <a href="/manager/list-shippers" class="cancel-link">Hủy</a>
+            </div>
+        </form>
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/popper.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/main.js}"></script>
+<script>
+    function logout() {
+        alert('Đăng xuất thành công!');
+        window.location.href = '/login';
+    }
+</script>
+</body>
+</html>

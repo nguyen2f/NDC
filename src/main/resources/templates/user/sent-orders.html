@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sent Orders</title>
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f8f9fa;
+        }
+        h1 {
+            color: #333;
+            font-weight: 600;
+            text-align: center;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        table th, table td {
+            text-align: left;
+            padding: 12px;
+        }
+        table thead th {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .no-orders {
+            text-align: center;
+            color: #555;
+            font-size: 18px;
+            margin: 20px 0;
+        }
+        .btn-create {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            text-align: center;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-create:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Sent Orders</h1>
+
+    <div th:if="${sentOrders != null and #lists.size(sentOrders) > 0}">
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Order Name</th>
+                <th>Sender Address</th>
+                <th>Receiver Address</th>
+                <th>Weight</th>
+                <th>Quantity</th>
+                <th>Shipping Cost</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${sentOrders}">
+                <td th:text="${order.orderName}">Order Name</td>
+                <td th:text="${order.senderAddress.province + ', ' + order.senderAddress.district + ', ' + order.senderAddress.ward + ', ' + order.senderAddress.detailedAddress}">Sender Address</td>
+                <td th:text="${order.receiverAddress.province + ', ' + order.receiverAddress.district + ', ' + order.receiverAddress.ward + ', ' + order.receiverAddress.detailedAddress}">Receiver Address</td>
+                <td th:text="${order.orderWeight}">Weight</td>
+                <td th:text="${order.orderQuantity}">Quantity</td>
+                <td th:text="${order.shippingCost}">Shipping Cost</td>
+                <td th:text="${order.currentStatus}">Status</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${sentOrders == null or #lists.isEmpty(sentOrders)}" class="no-orders">
+        <p>No orders sent yet.</p>
+    </div>
+
+    <a th:href="@{/user/create-order}" class="btn-create">Create a New Order</a>
+</div>
+
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/popper.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</body>
+</html>
